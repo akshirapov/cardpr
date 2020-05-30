@@ -13,7 +13,7 @@ supported_methods = [
 ]
 
 
-@app.route('/hook', methods=['POST'])
+@app.route('/cardpr/hook', methods=['POST'])
 def hook():
     data = request.get_json() or {}
     if 'method' not in data:
@@ -31,7 +31,7 @@ def hook():
     return error_response(400)
 
 
-@app.route('/hooks', methods=['GET'])
+@app.route('/cardpr/hooks', methods=['GET'])
 def get_hooks():
     result = hooks.get_hooks()
     if result:
