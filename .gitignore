@@ -3,3 +3,6 @@ __pycache__/
 venv
 .env
 hooks
+hook.json
+app.db
+logs

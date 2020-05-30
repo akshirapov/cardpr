@@ -1,10 +1,21 @@
-
-import os
 import json
-import time
 
-from pathlib import Path
-from app import app
+from app import app, db
+from app.models import Hook
+
+
+def get_hooks():
+    """
+    Return list of hooks.
+    """
+    result = []
+
+    hooks = Hook.query.filter_by(complete=False).order_by(Hook.timestamp.asc())
+    for h in hooks:
+        data = json.loads(h.body)
+        result.append(data)
+
+    return {'hooks': result, 'hooks_num': len(result)}
 
 
 def process_hook(data: dict):
@@ -24,67 +35,14 @@ def process_hook(data: dict):
     return result
 
 
-def get_hooks():
-    """
-    Return list of hooks.
-    """
-    hooks = []
-    for filename in get_hooks_list():
-        data = read_hook(filename)
-        hooks.append(data)
-    return {'hooks': hooks}
-
-
-def get_hook_filename():
-    """
-    Returns the name for the hook.
-
-    'name = hook_<timestamp>.json'
-    """
-    folder = get_hooks_folder()
-    name = os.path.join(
-        folder,
-        f'hook_{time.time()}.json'
-    )
-    return name
-
-
-def get_hooks_folder():
-    """
-    Returns folder of stored hook files.
-    """
-    folder = app.config['BASE_DIR'] + '/hooks'
-    Path(folder).mkdir(parents=True, exist_ok=True)
-    return folder
-
-
-def get_hooks_list():
-    """
-    Return list of hook files.
-    """
-    filenames = []
-    folder = get_hooks_folder()
-    for root, dirs, files in os.walk(folder):
-        for file in files:
-            filenames.append(os.path.join(root, file))
-    return filenames
-
-
-def read_hook(filename):
-    """
-    Reads json data from a file.
-    """
-    with open(filename, encoding='utf-8') as f:
-        return json.loads(f.read())
-
-
 def save_hook(data: dict):
     """
-    Saves json data to a file.
+    Saves data to a database.
     """
-    filename = get_hook_filename()
-    with open(filename, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
+    hook = Hook()
+    hook.body = json.dumps(data, ensure_ascii=False, indent=4)
+    db.session.add(hook)
+    db.session.commit()
 
 
 def create_customer(data: dict):
