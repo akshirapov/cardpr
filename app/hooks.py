@@ -32,7 +32,7 @@ def get_hooks():
     for filename in get_hooks_list():
         data = read_hook(filename)
         hooks.append(data)
-    return hooks
+    return {'hooks': hooks}
 
 
 def get_hook_filename():
