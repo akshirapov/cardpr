@@ -66,6 +66,7 @@ def update_customer(data: dict):
 
 
 def read_balance(data: dict):
+    save_hook(data)
     result = {
         'success': False,
         'bonus': 0,
@@ -76,6 +77,7 @@ def read_balance(data: dict):
 
 
 def add_balance(data: dict):
+    save_hook(data)
     result = {
         'success': False,
     }

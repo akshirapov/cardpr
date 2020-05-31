@@ -8,8 +8,8 @@ from .errors import error_response
 supported_methods = [
     'createCustomer',
     'updateCustomer',
-    # 'readBalance',
-    # 'addBalance',
+    'readBalance',
+    'addBalance',
 ]
 
 
