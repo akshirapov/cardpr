@@ -13,9 +13,10 @@ def get_hooks():
     hooks = Hook.query.filter_by(complete=False).order_by(Hook.timestamp.asc())
     for h in hooks:
         data = json.loads(h.body)
+        rename_cts(data)
         result.append(data)
 
-    return {'hooks': result, 'hooks_num': len(result)}
+    return {'hooks': result}
 
 
 def process_hook(data: dict):
@@ -79,3 +80,11 @@ def add_balance(data: dict):
         'success': False,
     }
     return result
+
+
+def rename_cts(data: dict):
+    cts_org = data['customer']['cardTracks']
+    cts_new = dict()
+    for ct in cts_org.keys():
+        cts_new[f'ct_{ct}'] = cts_org[ct]
+    data['customer']['cardTracks'] = cts_new
