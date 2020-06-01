@@ -13,6 +13,7 @@ def get_hooks():
     hooks = Hook.query.filter_by(complete=False).order_by(Hook.timestamp.asc())
     for h in hooks:
         data = json.loads(h.body)
+        data['id'] = h.id
         rename_cts(data)
         result.append(data)
 
@@ -44,6 +45,12 @@ def save_hook(data: dict):
     hook.body = json.dumps(data, ensure_ascii=False, indent=4)
     db.session.add(hook)
     db.session.commit()
+
+
+def complete_hook():
+    """
+    Mark the hook as complete.
+    """
 
 
 def create_customer(data: dict):
