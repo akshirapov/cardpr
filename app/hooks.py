@@ -85,8 +85,9 @@ def add_balance(data: dict):
 
 
 def rename_cts(data: dict):
-    cts_org = data['customer']['cardTracks']
-    cts_new = dict()
-    for ct in cts_org.keys():
-        cts_new[f'ct_{ct}'] = cts_org[ct]
-    data['customer']['cardTracks'] = cts_new
+    if 'customer' in data and 'cardTracks' in data['customer']:
+        cts_org = data['customer']['cardTracks']
+        cts_new = dict()
+        for ct in cts_org.keys():
+            cts_new[f'ct_{ct}'] = cts_org[ct]
+        data['customer']['cardTracks'] = cts_new
