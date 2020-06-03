@@ -61,7 +61,7 @@ def complete_hook(hook_id: int):
         hook.complete = True
         db.session.add(hook)
         db.session.commit()
-        return {'status': 'complete'}
+        return {'success': True}
 
 
 def rename_cts(data: dict):
