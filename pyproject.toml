@@ -8,6 +8,8 @@ packages = [{include = "wallet_cards_api"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
+fastapi = "^0.89.1"
+uvicorn = "^0.20.0"
 
 
 [tool.poetry.group.dev.dependencies]
