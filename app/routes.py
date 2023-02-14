@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 
 from app.services import add_balance, create_customer, read_balance
 
@@ -9,7 +9,7 @@ ALLOWED_METHODS = ("addBalance", "createCustomer", "readBalance")
 
 
 @router.post("/webhook")
-def webhook(hook_data):
+def webhook(hook_data: dict = Body(...)):
     method = hook_data.get("method", "")
     if method not in ALLOWED_METHODS:
         return {"error": f"unsupported method <{method}>"}
