@@ -1,14 +1,23 @@
+from app.schemas import (
+    AddBalance,
+    AddBalanceResponse,
+    CreateCustomer,
+    CreateCustomerResponse,
+    ReadBalance,
+    ReadBalanceResponse,
+)
 
-def create_customer(data):
-    """Creates a customer."""
-    return {}
 
-
-def read_balance(data: dict):
-    """Returns loyality system info."""
-    return {}
-
-
-def add_balance(data: dict):
+def add_balance(data: AddBalance) -> AddBalanceResponse:
     """Accrues welcome and referral bonuses."""
-    return {}
+    return AddBalanceResponse(success=True)
+
+
+def create_customer(data: CreateCustomer) -> CreateCustomerResponse:
+    """Creates a customer."""
+    return CreateCustomerResponse(customer_id="")
+
+
+def read_balance(data: ReadBalance) -> ReadBalanceResponse:
+    """Returns loyality system info."""
+    return ReadBalanceResponse(success=True)
