@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "CardPR API"
 authors = ["Aleksandr Shirapov"]
 readme = "README.md"
-packages = [{include = "cardpr"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
