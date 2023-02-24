@@ -7,14 +7,14 @@ def convert_field_to_camel_case(string: str) -> str:
     return "".join(word if index == 0 else word.capitalize() for index, word in enumerate(string.split("_")))
 
 
-class WalletCardsBase(BaseModel):
+class CardPRBase(BaseModel):
     class Config(BaseConfig):
         orm_mode = True
         allow_population_by_field_name = True
         alias_generator = convert_field_to_camel_case
 
 
-class Customer(WalletCardsBase):
+class Customer(CardPRBase):
     name: str = ""
     surname: str = ""
     middlename: str = ""
@@ -30,32 +30,32 @@ class Customer(WalletCardsBase):
     transaction_id: str | UUID = ""
 
 
-class AddBalance(WalletCardsBase):
+class AddBalance(CardPRBase):
     crm_key: str | UUID = ""
     method: str
     customer: Customer
 
 
-class CreateCustomer(WalletCardsBase):
+class CreateCustomer(CardPRBase):
     method: str
     customer: Customer
 
 
-class ReadBalance(WalletCardsBase):
+class ReadBalance(CardPRBase):
     crm_key: str | UUID = ""
     method: str
     customer: Customer
 
 
-class AddBalanceResponse(WalletCardsBase):
+class AddBalanceResponse(CardPRBase):
     success: bool
 
 
-class CreateCustomerResponse(WalletCardsBase):
+class CreateCustomerResponse(CardPRBase):
     customer_id: str | UUID
 
 
-class ReadBalanceResponse(WalletCardsBase):
+class ReadBalanceResponse(CardPRBase):
     success: bool
     bonus: str = ""
     balance: str = ""

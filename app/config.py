@@ -6,7 +6,7 @@ from pydantic import BaseSettings
 
 class AppSettings(BaseSettings):
     debug: bool = False
-    title: str = "Wallet Cards API"
+    title: str = "CardPR API"
     version: str = "0.1.0"
 
     @property
