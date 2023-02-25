@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Body
+from sqlalchemy.orm import Session
 
+from app.db.core import get_db
 from app.schemas import AddBalance, CreateCustomer, ReadBalance
 from app.services import add_balance, create_customer, read_balance
 
@@ -10,7 +12,7 @@ ALLOWED_METHODS = ("addBalance", "createCustomer", "readBalance")
 
 
 @router.post("/cardpr")
-def capdpr_webhook(payload: dict = Body(...)):
+def capdpr_webhook(*, db: Session = get_db(), payload: dict = Body(...)):
     """Webhook from the service."""
 
     method = payload.get("method", "")
@@ -18,8 +20,8 @@ def capdpr_webhook(payload: dict = Body(...)):
         return {"error": f"unsupported method <{method}>"}
 
     if method == "addBalance":
-        return add_balance(AddBalance(**payload))
+        return add_balance(db=db, data=AddBalance(**payload))
     elif method == "createCustomer":
-        return create_customer(CreateCustomer(**payload))
+        return create_customer(db=db, data=CreateCustomer(**payload))
     elif method == "readBalance":
-        return read_balance(ReadBalance(**payload))
+        return read_balance(db=db, data=ReadBalance(**payload))
