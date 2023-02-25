@@ -9,7 +9,7 @@ router = APIRouter()
 ALLOWED_METHODS = ("addBalance", "createCustomer", "readBalance")
 
 
-@router.post("/carpdr")
+@router.post("/cardpr")
 def capdpr_webhook(payload: dict = Body(...)):
     """Webhook from the service."""
 
