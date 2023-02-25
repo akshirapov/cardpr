@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Depends
 from sqlalchemy.orm import Session
 
 from app.db.core import get_db
@@ -12,7 +12,7 @@ ALLOWED_METHODS = ("addBalance", "createCustomer", "readBalance")
 
 
 @router.post("/cardpr")
-def capdpr_webhook(*, db: Session = get_db(), payload: dict = Body(...)):
+def cardpr_webhook(*, db: Session = Depends(get_db), payload: dict = Body(...)):
     """Webhook from the service."""
 
     method = payload.get("method", "")
