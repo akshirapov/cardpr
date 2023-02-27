@@ -1,8 +1,7 @@
 import re
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import DeclarativeBase, declared_attr, sessionmaker
 
 from app.config import get_app_settings
 
@@ -19,17 +18,10 @@ def resolve_table_name(name: str) -> str:
     return "_".join([x.lower() for x in names if x])
 
 
-class CustomBase:
-    @declared_attr  # type: ignore
-    def __tablename__(self) -> str:
-        return resolve_table_name(self.__name__)  # type: ignore
-
-    def dict(self):
-        """Returns a dict representation of a model."""
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}  # type: ignore
-
-
-Base = declarative_base(cls=CustomBase)
+class Base(DeclarativeBase):
+    @declared_attr
+    def __tablename__(self):
+        return resolve_table_name(self.__name__)
 
 
 def get_db():

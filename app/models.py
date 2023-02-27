@@ -1,53 +1,61 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import UUID, Boolean, Column, DateTime, Integer, Numeric, String, Text
+from sqlalchemy import (
+    UUID,
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.core import Base
 
 
 class Customer(Base):
-    id = Column(UUID(as_uuid=True), primary_key=True, unique=True, nullable=False, default=uuid.uuid4, index=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
-    name = Column(String(255), default="", nullable=False)
-    surname = Column(String(255), default="", nullable=False)
-    middlename = Column(String(255), default="", nullable=False)
+    guid: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), unique=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(50))
+    surname: Mapped[str] = mapped_column(String(50))
+    middlname: Mapped[str] = mapped_column(String(50))
 
-    email = Column(String(255), default="", nullable=False)
-    phone = Column(String(10), unique=True, nullable=False, index=True)
-    birthday = Column(DateTime, default=datetime.min, nullable=False)
+    email: Mapped[str] = mapped_column(String(50))
+    phone: Mapped[str] = mapped_column(String(12), index=True)
+    birthday: Mapped[datetime] = mapped_column(DateTime)
 
-    discount = Column(Numeric(5, 2), default=0, nullable=False)
-    bonus = Column(Numeric(5, 2), default=0, nullable=False)
-    balance = Column(Numeric(15, 2), default=0, nullable=False)
+    discount: Mapped[float] = mapped_column(Numeric(5, 2))
+    bonus: Mapped[float] = mapped_column(Numeric(5, 2))
+    balance: Mapped[float] = mapped_column(Numeric(15, 2))
+    promo: Mapped[str] = mapped_column(String(50))
+    refer_customer_phone: Mapped[str] = mapped_column(String(12))
 
-    promo = Column(String(50), default="", nullable=False)
-    refer_customer_phone = Column(String(10), default="", nullable=False)
+    cards: Mapped[list["Card"]] = relationship(back_populates="customer")
 
-    link = Column(Text, default="", nullable=False)
-    form_url = Column(Text, default="", nullable=False)
+    link: Mapped[str] = mapped_column(Text)
+    form_url: Mapped[str] = mapped_column(Text)
 
-    # TODO: Add relations
-    extra = Column(Text, default="", nullable=False)
+    extra: Mapped[str] = mapped_column(Text)
 
-    # TODO: Add relations
-    # cards
+    def __repr__(self) -> str:
+        return f"Customer(id={self.id!r}, name={self.name!r}, phone={self.phone!r})"
 
 
 class Card(Base):
-    id = Column(UUID(as_uuid=True), primary_key=True, unique=True, nullable=False, default=uuid.uuid4, index=True)
-    # TODO: Add relations
-    # customer_id = Column(UUID, nullable=False)
-    number = Column(Integer, default=0, nullable=False)
-    track = Column(String(50), default="", nullable=False)
-    install = Column(Boolean, default=False, nullable=False)
-    url = Column(Text, default="", nullable=False)
-    gpay_url = Column(Text, default="", nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
 
+    number: Mapped[int] = mapped_column(Integer)
+    track: Mapped[int] = mapped_column(String(50))
+    install: Mapped[bool] = mapped_column(Boolean)
+    url: Mapped[str] = mapped_column(Text)
+    gpay_url: Mapped[str] = mapped_column(Text)
 
-class Extra(Base):
-    id = Column(UUID(as_uuid=True), primary_key=True, unique=True, nullable=False, default=uuid.uuid4, index=True)
-    # TODO: Add relations
-    # customer_id = Column(UUID, nullable=False)
-    field = Column(String(255), default="", nullable=False)
-    value = Column(String(255), default="", nullable=False)
+    customer_id: Mapped[int] = mapped_column(ForeignKey("customer.id"))
+    customer: Mapped["Customer"] = relationship(back_populates="cards")
+
+    def __repr__(self) -> str:
+        return f"Card(id={self.id!r}, number={self.number!r}, customer_id={self.customer_id!r})"
