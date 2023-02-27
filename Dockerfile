@@ -30,4 +30,5 @@ RUN pip install --upgrade pip && \
 # copy application code to WORKDIR
 COPY . ${APP_HOME}
 
-CMD uvicorn app.main:app --host=0.0.0.0 --port=80
+CMD alembic upgrade head && \
+    uvicorn app.main:app --host=0.0.0.0 --port=80
