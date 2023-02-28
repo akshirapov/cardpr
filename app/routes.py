@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.db.core import get_db
-from app.schemas import AddBalance, CreateCustomer, ReadBalance
-from app.services import add_balance, create_customer, read_balance
+from app.schemas import Customer, Webhook
+from app.services import balance as svcs_balance, customer as svcs_customer
 
 router = APIRouter()
 
@@ -11,17 +11,44 @@ router = APIRouter()
 ALLOWED_METHODS = ("addBalance", "createCustomer", "readBalance")
 
 
-@router.post("/cardpr")
-def cardpr_webhook(*, db: Session = Depends(get_db), payload: dict = Body(...)):
-    """Webhook from the service."""
+@router.post("/webhook")
+def webhook(*, db_session: Session = Depends(get_db), webhook_in: Webhook):
+    """A webhook from the wallet cards service ."""
 
-    method = payload.get("method", "")
+    webhook_data = webhook_in.dict()
+
+    method = webhook_data.get("method", "")
     if method not in ALLOWED_METHODS:
-        return {"error": f"unsupported method <{method}>"}
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=[{"error": f"unsupported method <{method}>"}],
+        )
+    customer_dict = webhook_data.get("customer", {})
+    customer_data = Customer(**customer_dict)
 
-    if method == "addBalance":
-        return add_balance(db=db, data=AddBalance(**payload))
-    elif method == "createCustomer":
-        return create_customer(db=db, data=CreateCustomer(**payload))
+    if method == "createCustomer":
+        return create_customer(db_session=db_session, customer_in=customer_data)
+    elif method == "addBalance":
+        return add_balance(db_session=db_session, customer_in=customer_data)
     elif method == "readBalance":
-        return read_balance(db=db, data=ReadBalance(**payload))
+        return read_balance(db_session=db_session, customer_in=customer_data)
+
+
+@router.post("/createCustomer")
+def create_customer(*, db_session: Session = Depends(get_db), customer_in: Customer):
+    """Creates a new customer."""
+
+    customer = svcs_customer.create(db_session=db_session, customer_in=customer_in)
+    return customer.guid
+
+
+@router.post("/addBalance")
+def add_balance(*, db_session: Session = Depends(get_db), customer_in: Customer):
+    """Accrues welcome and referral bonuses for a customer."""
+    return svcs_balance.add(db_session=db_session, customer_in=customer_in)
+
+
+@router.post("/readBalance")
+def read_balance(*, db_session: Session = Depends(get_db), customer_in: Customer):
+    """Returns the loyality system info of a customer."""
+    return svcs_balance.read(db_session=db_session, customer_in=customer_in)

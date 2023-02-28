@@ -17,15 +17,17 @@ from app.db.core import Base
 
 
 class Customer(Base):
+    """"""
+
     id: Mapped[int] = mapped_column(primary_key=True)
 
     guid: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), unique=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(50))
     surname: Mapped[str] = mapped_column(String(50))
-    middlname: Mapped[str] = mapped_column(String(50))
+    middlename: Mapped[str] = mapped_column(String(50))
 
     email: Mapped[str] = mapped_column(String(50))
-    phone: Mapped[str] = mapped_column(String(12), index=True)
+    phone: Mapped[str] = mapped_column(String(12), unique=True, index=True)
     birthday: Mapped[datetime] = mapped_column(DateTime)
 
     discount: Mapped[float] = mapped_column(Numeric(5, 2))
@@ -46,6 +48,8 @@ class Customer(Base):
 
 
 class Card(Base):
+    """"""
+
     id: Mapped[int] = mapped_column(primary_key=True)
 
     number: Mapped[int] = mapped_column(Integer)

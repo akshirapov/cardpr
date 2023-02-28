@@ -1,6 +1,7 @@
+from datetime import datetime as dt
 from uuid import UUID
 
-from pydantic import BaseConfig, BaseModel
+from pydantic import BaseConfig, BaseModel, validator
 
 
 def convert_field_to_camel_case(string: str) -> str:
@@ -18,30 +19,48 @@ class Customer(CardPRBase):
     name: str = ""
     surname: str = ""
     middlename: str = ""
+
     email: str = ""
     phone: str
-    birthday: str = ""
+    birthday: str | dt = ""
+
     card_numbers: list[str] = []
     card_tracks: list[dict[str, str]] = []
-    extra: dict[str, str] = {}
+
+    extra: str | dict[str, str] = {}
+
     promo: str = ""
     refer_customer_phone: str = ""
+
     sum: int = 0
     transaction_id: str | UUID = ""
 
+    discount: float = 0.00
+    bonus: float = 0.00
+    balance: float = 0.00
 
-class AddBalance(CardPRBase):
-    crm_key: str | UUID = ""
-    method: str
-    customer: Customer
+    refer_customer_phone: str = ""
+
+    link: str = ""
+    form_url: str = ""
+
+    @validator("birthday")
+    def parse_birthdate(cls, value):
+        if isinstance(value, str):
+            return dt.strptime(value, "%d.%m.%Y")
+        return value
+
+    @validator("extra")
+    def parse_extra(cls, value: dict):
+        if isinstance(value, dict):
+            r = []
+            for k, v in value.items():
+                r.append(f"{k}:{v}")
+            return ";".join(r)
+        return value
 
 
-class CreateCustomer(CardPRBase):
-    method: str
-    customer: Customer
-
-
-class ReadBalance(CardPRBase):
+class Webhook(CardPRBase):
     crm_key: str | UUID = ""
     method: str
     customer: Customer
@@ -49,10 +68,6 @@ class ReadBalance(CardPRBase):
 
 class AddBalanceResponse(CardPRBase):
     success: bool
-
-
-class CreateCustomerResponse(CardPRBase):
-    customer_id: str | UUID
 
 
 class ReadBalanceResponse(CardPRBase):

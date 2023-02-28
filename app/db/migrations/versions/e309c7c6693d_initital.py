@@ -22,7 +22,7 @@ def upgrade() -> None:
         sa.Column("guid", sa.UUID(), nullable=False),
         sa.Column("name", sa.String(length=50), nullable=False),
         sa.Column("surname", sa.String(length=50), nullable=False),
-        sa.Column("middlname", sa.String(length=50), nullable=False),
+        sa.Column("middlename", sa.String(length=50), nullable=False),
         sa.Column("email", sa.String(length=50), nullable=False),
         sa.Column("phone", sa.String(length=12), nullable=False),
         sa.Column("birthday", sa.DateTime(), nullable=False),
@@ -36,6 +36,7 @@ def upgrade() -> None:
         sa.Column("extra", sa.Text(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("guid"),
+        sa.UniqueConstraint("phone"),
     )
     op.create_index(op.f("ix_customer_phone"), "customer", ["phone"], unique=False)
 
