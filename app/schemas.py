@@ -39,8 +39,6 @@ class Customer(CardPRBase):
     bonus: float = 0.00
     balance: float = 0.00
 
-    refer_customer_phone: str = ""
-
     link: str = ""
     form_url: str = ""
 
