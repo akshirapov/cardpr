@@ -27,18 +27,17 @@ def webhook(*, db_session: Session = Depends(get_db), webhook_in: Webhook):
     customer_data = Customer(**customer_dict)
 
     if method == "createCustomer":
-        return create_customer(db_session=db_session, customer_in=customer_data)
+        # According to the cardpr api description, the method also implies updating
+        return update_or_create_customer(db_session=db_session, customer_in=customer_data)
     elif method == "addBalance":
         return add_balance(db_session=db_session, customer_in=customer_data)
     elif method == "readBalance":
         return read_balance(db_session=db_session, customer_in=customer_data)
 
 
-@router.post("/createCustomer")
-def create_customer(*, db_session: Session = Depends(get_db), customer_in: Customer):
-    """Creates a new customer."""
-
-    customer = svcs_customer.create(db_session=db_session, customer_in=customer_in)
+def update_or_create_customer(*, db_session: Session = Depends(get_db), customer_in: Customer):
+    """Returns the GUID of a updated or created customer."""
+    customer = svcs_customer.update_or_create(db_session=db_session, customer_in=customer_in)
     return customer.guid
 
 
